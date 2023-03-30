@@ -46,7 +46,7 @@ Implementação: Fringe é uma pilha LIFO
 from collections import deque
 
 
-initial_state = (0, 0)  # começa com as duas jarras vazias
+initial_state = (0, 0)  # começa com as duas jarros vazios
 
 """
 Classe usada para representar um nó da árvore de busca.
@@ -61,7 +61,7 @@ class Node:
     
     # Função de verificação: Verifica se obteve sucesso na busca, ou seja, se o nó é um nó objetivo.
     
-    def is_objective_node(self, ):
+    def is_objective_node(self):
         return (self.state[1] == 2)
 
     
@@ -90,20 +90,20 @@ class Node:
         if (j2 == 0):  # se j2 vazia
             children.append(Node((j1, 4), self))  # encher j2
 
-        if (j1 != 0 and j2 != 4):  # j1 não está vazio e j2 não está cheia transferir o conteúdo de j1 para j2 até encher
-            amount_transferred = 4 - j2
-            if (amount_transferred > j1):
-                amount_transferred = j1
+        if (j1 != 0 and j2 != 4):  # j1 não está vazio e j2 não está cheia 
+            amount_transferred = 4 - j2 # quantidade máxima que j2 pode receber
+            if (amount_transferred > j1): # se a quantidade máxima é igual ao conteúdo de j1
+                amount_transferred = j1 # transfere todo j1
             children.append(
-                Node((j1-amount_transferred, j2+amount_transferred), self))
+                Node((j1-amount_transferred, j2+amount_transferred), self)) # transferir o conteúdo de j1 para j2 
 
         if (j1 != 3 and j2 != 0):  # se j1 não está cheia e j2 não está vazia
             # amount_transferredir o conteúdo de j2 para j1 até encher
-            amount_transferred = 3 - j1
-            if (amount_transferred > j2):
-                amount_transferred = j2
+            amount_transferred = 3 - j1 # quantidade máxima que j1 pode receber
+            if (amount_transferred > j2): # se a quantidade máxima é igual ao conteúdo de j2
+                amount_transferred = j2 # transfere todo j2
             children.append(
-                Node((j1+amount_transferred, j2-amount_transferred), self))
+                Node((j1+amount_transferred, j2-amount_transferred), self)) # transferir o conteúdo de j2 para j1
 
         if (j1 != 0):  # se j1 não está vazia
             children.append(Node((0, j2), self))  # esvaziar j1
@@ -134,9 +134,9 @@ def breadth_first():
         explored_states.append(node.state) # coloca na fila de estados explorados
 
         for child in node.children(): # percorre os nós 
-            if child.state not in explored_states and child not in row: # se não está na fila de nós explorados e não está na fila
+            if child.state not in explored_states and child not in row: # se não está na lista de nós explorados e não está na fila
                 if child.is_objective_node(): # se o nó é o nó objetivo
-                    return child.print_path()  # solução encontrada no filho
+                    return child.print_path()  # solução encontrada no filho -> imprime caminho
 
                 row.append(child) # adciona nó na fila
 
@@ -168,8 +168,11 @@ def depth_first():
                 stack.append(child)
 
  
-print("Busca em largura:")
+print("\nBusca em largura:")
 breadth_first()
+
+
+print("\n#########################################################################################################")
 
 
 print("\nBusca em profundidade:")
