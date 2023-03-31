@@ -40,6 +40,14 @@ Implementação: Fringe é uma fila FIFO
 BUSCA EM PROFUNDIDADE:
 Estratégia: Expandir um nó mais profundo primeiro
 Implementação: Fringe é uma pilha LIFO
+
+BUSCA DE CUSTO UNIFORME
+Estratégia: Expandir um nó mais barato primeiro
+Implementação: Fringe é uma fila prioritária (prioridade:custo cumulativo)
+Expande os nós na ordem do custo de caminho ótimo
+O primeiro nó objetivo selecionado será a solução ótima
+Não se preocupa com a quantidade de passos, mas com o custo total
+Se o custo de todos os passos são iguais, então ela é igual a BFS
 """
 
 
@@ -86,9 +94,11 @@ class Node:
 
         if (j1 == 0):  # se j1 vazia
             children.append(Node((3, j2), self))  # encher j1
+            
 
         if (j2 == 0):  # se j2 vazia
             children.append(Node((j1, 4), self))  # encher j2
+            
 
         if (j1 != 0 and j2 != 4):  # j1 não está vazio e j2 não está cheia 
             amount_transferred = 4 - j2 # quantidade máxima que j2 pode receber
@@ -97,6 +107,7 @@ class Node:
             children.append(
                 Node((j1-amount_transferred, j2+amount_transferred), self)) # transferir o conteúdo de j1 para j2 
 
+
         if (j1 != 3 and j2 != 0):  # se j1 não está cheia e j2 não está vazia
             # amount_transferredir o conteúdo de j2 para j1 até encher
             amount_transferred = 3 - j1 # quantidade máxima que j1 pode receber
@@ -104,9 +115,12 @@ class Node:
                 amount_transferred = j2 # transfere todo j2
             children.append(
                 Node((j1+amount_transferred, j2-amount_transferred), self)) # transferir o conteúdo de j2 para j1
+            
 
         if (j1 != 0):  # se j1 não está vazia
             children.append(Node((0, j2), self))  # esvaziar j1
+
+        
 
         if (j2 != 0):  # se j2 não está vazia
             children.append(Node((j1, 0), self))  # esvaziar j2
@@ -118,27 +132,27 @@ class Node:
 
 def breadth_first():
     node = Node(initial_state, None)  # estado inicial 
-    row = deque()  # fila de nós a serem explorados
+    queue = deque()  # fila de nós a serem explorados
     explored_states = []  # lista de estados já explorados
 
     if node.is_objective_node(): # se o nó é o nó objetivo
         return node.print_path()  # solução encontrada -> imprime caminho 
 
-    row.append(node) # adiciona raíz na fila
+    queue.append(node) # adiciona raíz na fila
 
     while (True):
-        if not row:  # fila vazia
+        if not queue:  # fila vazia
             return "FAILED"
 
-        node = row.popleft()  # retira elemento da fila -> FIFO
-        explored_states.append(node.state) # coloca na fila de estados explorados
+        node = queue.popleft()  # retira elemento da fila -> FIFO
+        explored_states.append(node.state) # coloca na lista de estados explorados
 
         for child in node.children(): # percorre os nós 
-            if child.state not in explored_states and child not in row: # se não está na lista de nós explorados e não está na fila
+            if child.state not in explored_states and child not in queue: # se não está na lista de nós explorados e não está na fila
                 if child.is_objective_node(): # se o nó é o nó objetivo
                     return child.print_path()  # solução encontrada no filho -> imprime caminho
 
-                row.append(child) # adciona nó na fila
+                queue.append(child) # adciona nó na fila
 
 
 # Busca em profundidade.
@@ -154,21 +168,62 @@ def depth_first():
     stack.append(node) # adiciona raíz na pilha
 
     while (True):
-        if not stack:  # fronteira vazia
+        if not stack:  # pilha vazia
             return "FAILED"
             
         node = stack.pop()  # remoção LIFO
-        explored_states.append(node.state)
+        explored_states.append(node.state) # coloca na lista de estados explorados
 
-        for child in node.children():
-            if child.state not in explored_states and child not in stack:
-                if child.is_objective_node():
-                    return child.print_path()  # solução encontrada no filho
+        for child in node.children(): # percorre os nós 
+            if child.state not in explored_states and child not in stack: # se não está na lista de nós explorados e não está na pilha
+                if child.is_objective_node(): # se o nó é o nó objetivo
+                    return child.print_path()  # solução encontrada no filho -> imprime caminho
 
-                stack.append(child)
+                stack.append(child) # adciona nó na pilha
 
+# Busca de Custo Uniforme
+
+def uniform_cost():
+	node = Node(initial_state, None) # estado inicial
+	cost_value = 0
+	
+	priority_queue = {} # fila de nós e suas prioridades
+	priority_queue[node] = 0 # nó raiz assume propriedade 0
+	explored_states = [] # lista de estados já explorados
+	
+	while(True):
+		if not priority_queue: # fila de prioridade vazia
+			return "FAILED"
+		
+		# busca na fila o nó com prioridade menor
+		min_priority = float('inf')
+		min_node = None
+		
+		for n in priority_queue: # percorre a fila de prioridades
+			if priority_queue[n] < min_priority: # se o nó visitado tem prioridade menor que a menor prioridade
+				min_priority = priority_queue[n] # menor prioridade é igual a prioridade do nó visitado
+				min_node = n # nó de menor prioridade é igual ao nó visitado
+		
+		node = min_node # nó recebe o nó de menor prioridade
+		del priority_queue[min_node] # remove o nó de menor prioridade da fila de prioridades
+		
+		if node.is_objective_node(): # se o nó é o nó objetivo
+			return node.print_path() # solução encontrada -> imprime caminho
+		  
+		explored_states.append(node.state) # coloca na lista de estados explorados
+		
+		for child in node.children(): # percorre os nós
+			cost_value += 1 # aumenta o valor de custo a cada nó 
+			
+			if child.state not in explored_states and child not in priority_queue: # se não está na lista de nós explorados e não está na fila de prioridade
+				priority_queue[child] = cost_value # recebe o valor de custo
+			
+			elif child in priority_queue and priority_queue[child] > cost_value: # se está na fila de prioridade e o valor de custo do nó é maior que o valor de custo
+				priority_queue[child] = cost_value # recebe o valor de custo
  
 print("\nBusca em largura:")
+print("\n")
+print("Caminho:")
 breadth_first()
 
 
@@ -176,4 +231,17 @@ print("\n#######################################################################
 
 
 print("\nBusca em profundidade:")
+print("\n")
+print("Caminho:")
 depth_first()
+
+
+print("\n#########################################################################################################")
+
+
+print("\nBusca de custo uniforme:")
+print("\n")
+print("Caminho:")
+uniform_cost()
+
+print("\n")
