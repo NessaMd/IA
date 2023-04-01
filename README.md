@@ -4,5 +4,6 @@
 
 ## Exercícios
 
-1. Exercício dos Jarros. Neste, foram implementadas as regras para o problema além de três buscas vistas no início do módulo, as buscas não informadas, Busca em Profundidade (depth first search) e Busca em Largura (breadth first search) além da Busca Informada Busca de Custo Uniforme (uniform cost search). [Link do COLAB](https://colab.research.google.com/drive/10YYaOl3JYEybgzGrHahjQt0cgIut1dL3?usp=sharing){:target="_blank"}.
+1. Exercício dos Jarros. Neste, foram implementadas as regras para o problema além de três buscas vistas no início do módulo, as buscas não informadas, Busca em Profundidade (depth first search) e Busca em Largura (breadth first search) além da Busca Informada Busca de Custo Uniforme (uniform cost search). <a href="https://colab.research.google.com/drive/10YYaOl3JYEybgzGrHahjQt0cgIut1dL3?usp=sharing" target="_blank">Link do COLAB</a>
+
 
